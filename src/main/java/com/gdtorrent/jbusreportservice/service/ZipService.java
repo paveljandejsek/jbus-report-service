@@ -24,6 +24,7 @@ public class ZipService {
         try (ZipInputStream zis = new ZipInputStream(zipInputStream)) {
             ZipEntry zipEntry = zis.getNextEntry();
             while (zipEntry != null) {
+                validateZipEntryExtension(zipEntry.getName());
                 processEntry(destinationDirectoryPath, zis, zipEntry);
                 zipEntry = zis.getNextEntry();
             }
@@ -31,6 +32,13 @@ public class ZipService {
         }
 
         return destinationDirectoryPath;
+    }
+
+    private void validateZipEntryExtension(String zipEntryName) {
+        zipProperties.getAllowedEntryExtensions().stream()
+                .filter(zipEntryName::endsWith)
+                .findAny()
+                .orElseThrow(() -> new IllegalArgumentException("Invalid zip entry extension for file: " + zipEntryName));
     }
 
     private void processEntry(String destinationDirectoryPath, ZipInputStream zis, ZipEntry zipEntry) throws IOException {

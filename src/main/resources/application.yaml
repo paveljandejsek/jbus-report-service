@@ -10,4 +10,10 @@ report-service:
         repository-api-url: https://api.github.com/repos/EmbedITCZ/jbehave-support
       zip:
         directory: ./target/reports/
+        allowed-entry-extensions:
+          - xml
+          - js
+          - xslt
+          - log
+          - png
       reports-url: http://www.gdtorrent.com/jbus-reports/
