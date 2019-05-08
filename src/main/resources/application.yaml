@@ -7,4 +7,4 @@ spring:
 report-service:
       github:
         token: someTokenValue
-        repository-api-url: https://api.github.com/repos/someRepositoryLocation
+        repository-api-url: https://api.github.com/repos/EmbedITCZ/jbehave-support

@@ -8,7 +8,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.web.client.RestTemplate;
 
 @Configuration
-public class JrsConfig {
+public class Config {
 
     @Bean
     public RestTemplate gitHubRestTemplate(GitHubProperties gitHubProperties, RestTemplateBuilder restTemplateBuilder) {

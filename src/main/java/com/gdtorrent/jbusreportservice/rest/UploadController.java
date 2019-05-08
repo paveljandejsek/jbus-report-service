@@ -9,10 +9,10 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
-@RequestMapping(path = "reports")
+@RequestMapping(path = "/api/reports")
 public class UploadController {
 
-    @PostMapping(path = "{pullRequest}")
+    @PostMapping(path = "/{pullRequest}")
     public ResponseEntity uploadReports(@PathVariable("pullRequest") String pullRequest, @RequestParam("file") MultipartFile zipFile) {
         if (!"application/zip".equals(zipFile.getContentType())) {
             return ResponseEntity.badRequest().body("Invalid content type");
