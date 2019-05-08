@@ -19,19 +19,20 @@ public class ZipService {
     private final ZipProperties zipProperties;
 
     @SneakyThrows(IOException.class)
-    public String unzip(InputStream zipInputStream, String relativeDirectory) {
+    public void unzip(InputStream zipInputStream, String relativeDirectory) {
         String destinationDirectoryPath = zipProperties.getDirectory() + relativeDirectory;
+        File destinationDirectory = new File(destinationDirectoryPath);
+        destinationDirectory.mkdirs();
+
         try (ZipInputStream zis = new ZipInputStream(zipInputStream)) {
             ZipEntry zipEntry = zis.getNextEntry();
             while (zipEntry != null) {
                 validateZipEntryExtension(zipEntry.getName());
-                processEntry(destinationDirectoryPath, zis, zipEntry);
+                processEntry(destinationDirectory, zis, zipEntry);
                 zipEntry = zis.getNextEntry();
             }
             zis.closeEntry();
         }
-
-        return destinationDirectoryPath;
     }
 
     private void validateZipEntryExtension(String zipEntryName) {
@@ -41,10 +42,10 @@ public class ZipService {
                 .orElseThrow(() -> new IllegalArgumentException("Invalid zip entry extension for file: " + zipEntryName));
     }
 
-    private void processEntry(String destinationDirectoryPath, ZipInputStream zis, ZipEntry zipEntry) throws IOException {
+    private void processEntry(File destinationDirectory, ZipInputStream zis, ZipEntry zipEntry) throws IOException {
         byte[] buffer = new byte[1024];
 
-        File newFile = newFile(destinationDirectoryPath, zipEntry);
+        File newFile = newFile(destinationDirectory, zipEntry);
         try (FileOutputStream fos = new FileOutputStream(newFile)) {
             int len;
             while ((len = zis.read(buffer)) > 0) {
@@ -54,8 +55,7 @@ public class ZipService {
     }
 
     // zip slip prevention
-    private File newFile(String destinationDirectoryPath, ZipEntry zipEntry) throws IOException {
-        File destinationDirectory = new File(destinationDirectoryPath);
+    private File newFile(File destinationDirectory, ZipEntry zipEntry) throws IOException {
         File destinationFile = new File(destinationDirectory, zipEntry.getName());
 
         String directoryPath = destinationDirectory.getCanonicalPath();
