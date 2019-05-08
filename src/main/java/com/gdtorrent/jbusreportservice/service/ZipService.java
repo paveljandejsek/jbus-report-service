@@ -1,21 +1,27 @@
 package com.gdtorrent.jbusreportservice.service;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import com.gdtorrent.jbusreportservice.property.ZipProperties;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class ZipService {
 
+    private final ZipProperties zipProperties;
+
     @SneakyThrows(IOException.class)
-    public void unzip(File zipFile, String destinationDirectoryPath) {
-        try (ZipInputStream zis = new ZipInputStream(new FileInputStream(zipFile))) {
+    public String unzip(InputStream zipInputStream, String relativeDirectory) {
+        String destinationDirectoryPath = zipProperties.getDirectory() + relativeDirectory;
+        try (ZipInputStream zis = new ZipInputStream(zipInputStream)) {
             ZipEntry zipEntry = zis.getNextEntry();
             while (zipEntry != null) {
                 processEntry(destinationDirectoryPath, zis, zipEntry);
@@ -23,6 +29,8 @@ public class ZipService {
             }
             zis.closeEntry();
         }
+
+        return destinationDirectoryPath;
     }
 
     private void processEntry(String destinationDirectoryPath, ZipInputStream zis, ZipEntry zipEntry) throws IOException {

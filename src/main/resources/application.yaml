@@ -8,3 +8,6 @@ report-service:
       github:
         token: someTokenValue
         repository-api-url: https://api.github.com/repos/EmbedITCZ/jbehave-support
+      zip:
+        directory: ./target/reports/
+      reports-url: http://www.gdtorrent.com/jbus-reports/

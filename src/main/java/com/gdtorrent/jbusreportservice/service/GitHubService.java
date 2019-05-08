@@ -11,8 +11,8 @@ public class GitHubService {
 
     private final RestTemplate restTemplate;
 
-    public void postReportsComment(String pullRequest, String reportsUrl) {
-        restTemplate.postForObject("/issues/{pullRequest}/comments", getRequestBody(reportsUrl), String.class, pullRequest);
+    public void postReportsComment(String pullRequestNumber, String reportsUrl) {
+        restTemplate.postForObject("/issues/{pullRequestNumber}/comments", getRequestBody(reportsUrl), String.class, pullRequestNumber);
     }
 
     private String getRequestBody(String reportsUrl) {
