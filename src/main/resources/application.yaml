@@ -17,3 +17,6 @@ report-service:
           - log
           - png
       reports-url: http://www.gdtorrent.com/jbus-reports/
+      rest:
+        username: jbus
+        password: olsehrepusejom

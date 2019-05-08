@@ -1,15 +1,15 @@
 package com.gdtorrent.jbusreportservice;
 
+import com.gdtorrent.jbusreportservice.property.RestProperties;
 import com.gdtorrent.jbusreportservice.support.JrsAuthenticationEntryPoint;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.config.annotation.web.configurers.ExpressionUrlAuthorizationConfigurer;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(securedEnabled = true, prePostEnabled = true)
@@ -20,25 +20,29 @@ public class SecurityConfig {
     public static class PublicApiSecurityConfigurer extends WebSecurityConfigurerAdapter {
 
         private final JrsAuthenticationEntryPoint authenticationEntryPoint;
-
-        @Override
-        public void configure(WebSecurity web) throws Exception {
-            web.ignoring().antMatchers(HttpMethod.OPTIONS, "/api/**");
-        }
+        private final RestProperties restProperties;
 
         @Override
         protected void configure(HttpSecurity http) throws Exception {
-            HttpSecurity httpSecurity = http.antMatcher("/api/**")
+            http
                     .csrf()
                     .disable()
                     .exceptionHandling()
                     .authenticationEntryPoint(authenticationEntryPoint)
-                    .and();
+                    .and()
+                    .authorizeRequests()
+                    .anyRequest()
+                    .authenticated()
+                    .and()
+                    .httpBasic();
+        }
 
-            ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry registry = httpSecurity
-                    .authorizeRequests();
-
-            registry.antMatchers("/api/**").authenticated();
+        @Override
+        public void configure(AuthenticationManagerBuilder auth) throws Exception {
+            auth.inMemoryAuthentication()
+                    .withUser(restProperties.getUsername())
+                    .password(new BCryptPasswordEncoder().encode(restProperties.getPassword()))
+                    .authorities("ROLE_USER");
         }
     }
 
