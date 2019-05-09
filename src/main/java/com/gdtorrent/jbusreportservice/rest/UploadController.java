@@ -2,6 +2,7 @@ package com.gdtorrent.jbusreportservice.rest;
 
 import java.io.IOException;
 
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
 import com.gdtorrent.jbusreportservice.property.ReportServiceProperties;
@@ -31,7 +32,7 @@ public class UploadController {
     @SneakyThrows(IOException.class)
     @PostMapping(path = "/{pullRequestNumber}")
     public ResponseEntity uploadReports(@PathVariable("pullRequestNumber") @Pattern(regexp = "\\d+") String pullRequestNumber,
-            @RequestParam("file") MultipartFile zipFile) {
+            @RequestParam("file") @NotNull MultipartFile zipFile) {
         if (!"application/zip".equals(zipFile.getContentType())) {
             return ResponseEntity.badRequest().body("Invalid content type");
         }
