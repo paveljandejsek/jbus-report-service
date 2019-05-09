@@ -17,11 +17,12 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -68,19 +69,16 @@ public class JrsApplicationTests {
 
     @Test
     public void shouldUploadReportsAndComment() throws Exception {
-        MockHttpServletRequestBuilder httpServletRequestBuilder = post("/api/reports/83")
+        Resource zipResource = resourceLoader.getResource("classpath:reports.zip");
+        MockMultipartFile file = new MockMultipartFile("file", "reports.zip", "application/zip", zipResource.getInputStream());
+
+        MockHttpServletRequestBuilder httpServletRequestBuilder = MockMvcRequestBuilders.multipart("/api/reports/83")
+                .file(file)
                 .with(httpBasic(restProperties.getUsername(), restProperties.getPassword()));
-        ResultActions resultActions = mvc.perform(httpServletRequestBuilder);
 
-        resultActions.andExpect(authenticated());
-
-        // todo send zip
-        // todo add cron scheduled deleting of old reports
-    }
-
-    @Test
-    public void shouldFailValidations() {
-        // TODO
+        mvc.perform(httpServletRequestBuilder)
+                .andExpect(authenticated())
+                .andExpect(status().is2xxSuccessful());
     }
 
 }
