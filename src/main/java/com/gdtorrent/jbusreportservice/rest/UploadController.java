@@ -10,6 +10,7 @@ import com.gdtorrent.jbusreportservice.service.GitHubService;
 import com.gdtorrent.jbusreportservice.service.ZipService;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+@Slf4j
 @RequiredArgsConstructor
 @RestController
 @Validated
@@ -33,7 +35,9 @@ public class UploadController {
     @PostMapping(path = "/{pullRequestNumber}")
     public ResponseEntity uploadReports(@PathVariable("pullRequestNumber") @Pattern(regexp = "\\d+") String pullRequestNumber,
             @RequestParam("file") @NotNull MultipartFile zipFile) {
+        log.info("received file: {}", zipFile.getName());
         if (!"application/zip".equals(zipFile.getContentType())) {
+            log.warn("invalid content type: {}", zipFile.getContentType());
             return ResponseEntity.badRequest().body("Invalid content type");
         }
 

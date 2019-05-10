@@ -10,8 +10,11 @@ import java.util.zip.ZipInputStream;
 import com.gdtorrent.jbusreportservice.property.ZipProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.util.FileSystemUtils;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ZipService {
@@ -21,12 +24,18 @@ public class ZipService {
     @SneakyThrows(IOException.class)
     public void unzip(InputStream zipInputStream, String relativeDirectory) {
         String destinationDirectoryPath = zipProperties.getDirectory() + relativeDirectory;
+        log.info("unzipping into {}", destinationDirectoryPath);
         File destinationDirectory = new File(destinationDirectoryPath);
+        if (destinationDirectory.exists()) {
+            log.info("destination directory already exists, removing", destinationDirectoryPath);
+            FileSystemUtils.deleteRecursively(destinationDirectory);
+        }
         destinationDirectory.mkdirs();
 
         try (ZipInputStream zis = new ZipInputStream(zipInputStream)) {
             ZipEntry zipEntry = zis.getNextEntry();
             while (zipEntry != null) {
+                log.info("processing zip entry {}", zipEntry.getName());
                 validateZipEntryExtension(zipEntry.getName());
                 processEntry(destinationDirectory, zis, zipEntry);
                 zipEntry = zis.getNextEntry();
