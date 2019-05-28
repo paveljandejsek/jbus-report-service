@@ -23,7 +23,7 @@ report-service:
           - png
       reports:
         folder: reports
-        url: http://localhost:8080/${report-service.reports.folder}
+        url: http://localhost:8080/${report-service.reports.folder}/
       rest:
         username: user
         password: pass
