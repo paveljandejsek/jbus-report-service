@@ -3,6 +3,7 @@ package com.gdtorrent.jbusreportservice;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.security.test.web.servlet.response.SecurityMockMvcResultMatchers.authenticated;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -14,6 +15,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 
+import com.gdtorrent.jbusreportservice.property.ReportServiceProperties;
 import com.gdtorrent.jbusreportservice.property.RestProperties;
 import com.gdtorrent.jbusreportservice.property.ZipProperties;
 import com.gdtorrent.jbusreportservice.service.CleanupService;
@@ -57,6 +59,9 @@ public class JrsApplicationTests {
     private ZipProperties zipProperties;
 
     @Autowired
+    private ReportServiceProperties reportServiceProperties;
+
+    @Autowired
     private CleanupService cleanupService;
 
     @Test
@@ -72,6 +77,20 @@ public class JrsApplicationTests {
     public void shouldExtractReportsZip() throws IOException {
         Resource zipResource = resourceLoader.getResource("classpath:reports.zip");
         zipService.unzip(zipResource.getInputStream(), "extractTest");
+    }
+
+    @Test
+    public void shouldServeStaticFile() throws Exception {
+        Resource zipResource = resourceLoader.getResource("classpath:reports.zip");
+        zipService.unzip(zipResource.getInputStream(), "extractTest");
+
+
+        String xsltUrl = "/" + reportServiceProperties.getReports().getFolder() + "/extractTest/report.xslt";
+        String xsltContent = mvc.perform(get(xsltUrl))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        assertThat(xsltContent).isNotEmpty();
     }
 
     @Test

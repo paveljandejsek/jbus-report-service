@@ -42,7 +42,7 @@ public class UploadController {
         }
 
         zipService.unzip(zipFile.getInputStream(), pullRequestNumber);
-        gitHubService.postReportsComment(pullRequestNumber, reportServiceProperties.getReportsUrl() + pullRequestNumber);
+        gitHubService.postReportsComment(pullRequestNumber, reportServiceProperties.getReports().getUrl() + pullRequestNumber);
 
         return ResponseEntity.ok().build();
     }

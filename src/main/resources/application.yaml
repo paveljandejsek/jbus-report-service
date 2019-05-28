@@ -21,10 +21,12 @@ report-service:
           - xslt
           - log
           - png
-      reports-url: http://www.gdtorrent.com/jbus-reports/
+      reports:
+        folder: reports
+        url: http://localhost:8080/${report-service.reports.folder}
       rest:
-        username: jbus
-        password: olsehrepusejom
+        username: user
+        password: pass
       cleanup:
         cron: '0 0 6 * * *' # once per day at 6
         max-days: 30

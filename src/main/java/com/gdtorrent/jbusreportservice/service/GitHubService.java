@@ -14,7 +14,7 @@ public class GitHubService {
 
     public void postReportsComment(String pullRequestNumber, String reportsUrl) {
         log.info("calling /issues/{}/comments", pullRequestNumber);
-        String requestBody = getRequestBody(reportsUrl);
+        String requestBody = getRequestBody(reportsUrl + "/index.xml");
         log.info("with body {}", requestBody);
         String response = restTemplate.postForObject("/issues/{pullRequestNumber}/comments", requestBody, String.class, pullRequestNumber);
         log.info("got response: {}", response);

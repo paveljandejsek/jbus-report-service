@@ -9,10 +9,17 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties("report-service")
 public class ReportServiceProperties {
 
-    private String reportsUrl;
+    private Reports reports;
 
     private GitHubProperties github;
 
     private ZipProperties zip;
+
+    @Data
+    public static class Reports {
+        private String url;
+
+        private String folder;
+    }
 
 }

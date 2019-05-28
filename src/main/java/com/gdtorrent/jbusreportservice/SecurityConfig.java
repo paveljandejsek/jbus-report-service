@@ -1,5 +1,6 @@
 package com.gdtorrent.jbusreportservice;
 
+import com.gdtorrent.jbusreportservice.property.ReportServiceProperties;
 import com.gdtorrent.jbusreportservice.property.RestProperties;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -22,6 +23,7 @@ public class SecurityConfig {
 
         private final RestProperties restProperties;
         private final PasswordEncoder passwordEncoder;
+        private final ReportServiceProperties reportServiceProperties;
 
         @Override
         protected void configure(HttpSecurity http) throws Exception {
@@ -31,8 +33,8 @@ public class SecurityConfig {
                     .exceptionHandling()
                     .and()
                     .authorizeRequests()
-                        .anyRequest()
-                        .authenticated()
+                        .antMatchers("/" + reportServiceProperties.getReports().getFolder() + "/**").permitAll()
+                        .antMatchers("/**").authenticated()
                     .and()
                     .httpBasic()
                         .realmName("JRS Realm");
