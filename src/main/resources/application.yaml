@@ -21,6 +21,7 @@ report-service:
           - xslt
           - log
           - png
+          - /
       reports:
         folder: reports
         url: http://localhost:8080/${report-service.reports.folder}/

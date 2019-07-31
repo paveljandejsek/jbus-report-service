@@ -52,9 +52,16 @@ public class ZipService {
     }
 
     private void processEntry(File destinationDirectory, ZipInputStream zis, ZipEntry zipEntry) throws IOException {
-        byte[] buffer = new byte[1024];
-
         File newFile = newFile(destinationDirectory, zipEntry);
+        if (zipEntry.isDirectory()) {
+            newFile.mkdirs();
+        } else {
+            processFileEntry(zis, newFile);
+        }
+    }
+
+    private void processFileEntry(ZipInputStream zis, File newFile) throws IOException {
+        byte[] buffer = new byte[1024];
         try (FileOutputStream fos = new FileOutputStream(newFile)) {
             int len;
             while ((len = zis.read(buffer)) > 0) {
